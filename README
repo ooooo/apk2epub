@@ -1,6 +1,7 @@
 INSTALL
-gem install zipruby
+$ gem install zipruby
+$ git pull git@github.com:ooooo/apk2epub.git
 
-HOW TO USE
-ruby apk2epub [o'reill e-book apk files]
+USAGE
+$ ruby apk2epub.rb [o'reill e-book apk files]
 

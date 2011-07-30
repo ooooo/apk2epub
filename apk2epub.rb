@@ -4,14 +4,14 @@ require 'rubygems'
 require 'zipruby'
 
 class Apk2Epub
-  def self.do_convert(apk_file, epub_file)
-    epub_data = Apk2Epub.extract_epub_data(apk_file)
-    Apk2Epub.write_epub(epub_data, epub_file)
+  def self.do_convert(apk_file_name, epub_file_name)
+    epub_data = Apk2Epub.extract_epub_data(apk_file_name)
+    Apk2Epub.write_epub(epub_data, epub_file_name)
   end
 
-  def self.extract_epub_data(apk_file)
+  def self.extract_epub_data(apk_file_name)
     epub_data = Zip::Archive.open_buffer(Zip::CREATE) do |epub_archive|
-      Zip::Archive.open(apk_file) do |archive|
+      Zip::Archive.open(apk_file_name) do |archive|
         archive.each do |zip_entry|
           next unless %r!^assets/! =~ zip_entry.name
           zip_entry_data = zip_entry.read(zip_entry.size)
@@ -24,9 +24,9 @@ class Apk2Epub
     return epub_data
   end
 
-  def self.write_epub(epub_data, epub_file)
+  def self.write_epub(epub_data, epub_file_name)
     
-    Zip::Archive.open(epub_file, Zip::CREATE|Zip::TRUNC|Zip::BEST_SPEED) do |epub_archive_file|
+    Zip::Archive.open(epub_file_name, Zip::CREATE|Zip::TRUNC|Zip::BEST_SPEED) do |epub_archive_file|
       Zip::Archive.open_buffer(epub_data) do |epub_archive_data|
         epub_archive_data.each do |epub_entry|
           epub_entry_data = epub_entry.read(epub_entry.size)
@@ -37,21 +37,25 @@ class Apk2Epub
   end
 end
 
-def convert_apk_to_epub(apk_file)
-  epub_file = apk_file.sub(/\.apk$/, '.epub')
-  puts("converting #{apk_file} to #{epub_file}")
-  Apk2Epub.do_convert(apk_file, epub_file)
+def convert_apk_to_epub(apk_file_name)
+  epub_file_name = apk_file_name.sub(/\.apk$/, '.epub')
+  puts("converting #{apk_file_name} to #{epub_file_name}")
+  Apk2Epub.do_convert(apk_file_name, epub_file_name)
+end
+
+def usage
+  puts("#{$PROGRAM_NAME} [o'reilly e-book apk files]")
 end
 
 def main
-  if 0 == ARGV.size
-    Dir::glob("*.apk").each do |apk_file|
-      convert_apk_to_epub(apke_file)
-    end
+  if ARGV.empty?
+    usage
+    exit
   else
-    apk_file = ARGV.shift
-    convert_apk_to_epub(apk_file)
- end
+    ARGV.each do |apk_file_name|
+      convert_apk_to_epub(apk_file_name)
+    end
+  end
 end
 
 main
