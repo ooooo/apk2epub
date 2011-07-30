@@ -1,0 +1,6 @@
+INSTALL
+gem install zipruby
+
+HOW TO USE
+ruby apk2epub [o'reill e-book apk files]
+
